@@ -1,0 +1,101 @@
+---
+title: "Case Study 9: Interacting with time
+"
+author: "Lorenzo Leme"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:  
+    keep_md: true
+    toc: true
+    toc_float: true
+    code_folding: hide
+    fig_height: 6
+    fig_width: 12
+    fig_align: 'center'
+---
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r load_libraries, include=FALSE}
+# Use this R-Chunk to load all your libraries!
+#install.packages("tidyverse") # run this line once in console to get package
+library(tidyverse)
+library(quantmod)
+library(tidyquant)
+library(DT)
+library(dygraphs)
+library(timetk)
+```
+
+```{r load_data}
+# Use this R-Chunk to import all your datasets!
+tickers_today <- c("CXW", "F", "GM", "JCP", "KR", "WDC", "NKE","T", "WDAY", "WFC", "WMT")
+
+cxm1 <- tq_get("CXW", get = "stock.prices")
+f1 <- tq_get("F", get = "stock.prices")
+gm1 <- tq_get("GM", get = "stock.prices")
+jcp1 <- tq_get("JCP", get = "stock.prices")
+kro <- tq_get("KR", get = "stock.prices")
+wdc1 <- tq_get("WDC", get = "stock.prices")
+nke1 <- tq_get("NKE", get = "stock.prices")
+t1 <- tq_get("T", get = "stock.prices")
+wday1 <- tq_get("WDAY", get = "stock.prices")
+wfc1 <- tq_get("WFC", get = "stock.prices")
+wmt1 <- tq_get("WMT", get = "stock.prices")
+
+today <- bind_rows(cxm1, f1, gm1, jcp1, kro, wdc1, nke1, t1, wday1, wfc1, wmt1) %>% 
+   filter(date >= "2015-3-10") %>% 
+   select(date, volume, close, symbol)
+```
+
+## Background
+
+[ ] For your coding development use these tickers - tickers_today <- c("CXW", "F", "GM", "JCP", "KR", "WDC", "NKE","T", "WDAY", "WFC", "WMT")
+[ ] Use library(dygraphs) to build interactive visualizations of the stock performances over the last 5 years.
+[ ] Make a library(ggplot2) graphic that helps you build a solid question around how an investor would use volume in their trading strategy
+[ ] Create an .Rmd file with 1-2 paragraphs summarizing your graphics and the choices you made in your visualization
+[ ] Compile your .md and .html file into your git repository
+[ ] Find two other student’s compiled files in their repository and provide feedback using the issues feature in GitHub (If they already have three issues find a different student to critique)
+[ ] Address 1-2 of the issues posted on your project and push the updates to GitHub
+[ ] Publish your case study to Rstudio Connect at shiny.byui.edu
+
+## Data Wrangling
+
+```{r tidy_data}
+# Use this R-Chunk to clean & wrangle your data!
+getSymbols(tickers_today)
+closePrices <- do.call(merge, lapply(tickers_today, function(x) Cl(get(x))))
+dateWindow <- c("2015-3-10", "2020-3-10")
+volume <- do.call(merge, lapply(tickers_today, function(x) Cl(get(x))))
+
+ino <- tq_get("INO", get = "stock.prices")
+```
+
+## Data Visualization
+
+```{r plot_data}
+# Use this R-Chunk to plot & visualize your data!
+dygraph(closePrices, main = "Closing Price Over Five Years", group = "stock") %>%
+  dyRangeSelector(dateWindow = dateWindow)
+```
+
+
+```{r}
+ggplot(today, aes(x=date, color = symbol))+
+  geom_point(aes(y=close))
+```
+
+### Looking at volumes impact on the stock
+
+```{r}
+ggplot(today, aes(x=date, color = symbol, size = volume))+
+  geom_point(aes(y=close))
+```
+
+## Conclusions
+
+Three stocks I would pick would be T, NKE, and WMT. All three of these stocks are keepings a consistent upwards trend. Yes they do dip but the dont dip as much as the other stocks that are on the list. K is also another I would like the highlight as staying consistent.
+
+If we look at our last plot that implemented stock volume as size we can see that when a stock has a lower volume, the closing price will tend to be higher. This is because there's not a lot of that particular stock out there, when that happens that can drive the share price upwards. 
