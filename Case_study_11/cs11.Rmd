@@ -1,0 +1,203 @@
+---
+title: "Case Study 11"
+author: "Lorenzo Leme"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:  
+    keep_md: true
+    toc: true
+    toc_float: true
+    code_folding: hide
+    fig_height: 6
+    fig_width: 12
+    fig_align: 'center'
+---
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r load_libraries, include=FALSE}
+# Use this R-Chunk to load all your libraries!
+library(tidyverse)
+library(buildings)
+library(USAboundaries)
+library(sf)
+library(maps)
+library(leaflet)
+```
+
+```{r load_data}
+# Use this R-Chunk to import all your datasets!
+
+```
+
+## Background
+
+You can recreate CS 10 or find your own spatial data to display using leaflet.
+
+## Data Wrangling
+
+```{r tidy_data}
+# Use this R-Chunk to clean & wrangle your data!
+#MARKET CRASH 07-12
+
+VA_county <- us_counties() %>% 
+  filter(state_abbr == "VA") %>% 
+  mutate(countyfp = parse_number(countyfp)) %>% 
+  unique() 
+
+builds <- permits %>% 
+  rename(state_abbr = "StateAbbr") %>% 
+  rename(statefp = "state") %>% 
+  rename(countyfp = "county") %>% 
+  filter(state_abbr != "AK" & state_abbr != "HI" & state_abbr != "PR") %>%
+  filter(variable == "Single Family") %>% 
+  filter(year %in% c(2003, 2004, 2005, 2006, 2007, 2008)) %>% 
+  unique()
+
+
+builds <- permits %>%
+  filter(StateAbbr=="VA") %>% 
+  rename(state_abbr = "StateAbbr") %>% 
+  rename(statefp = "state") %>% 
+  rename(countyfp = "county")
+
+
+crash <- builds %>% 
+  filter(year %in% c(2006, 2007, 2008, 2009, 2010))
+
+VA <- inner_join(VA_county, crash, by = "countyfp") %>% 
+  select(countyfp, countyname, year, value, geometry) %>% 
+  group_by(countyfp, year) %>% 
+  mutate(total = sum(value)) %>% 
+  mutate(total = as.numeric(total)) 
+
+fairfax <- VA %>% 
+  filter(countyname == "Fairfax County")
+
+crash06 <- VA %>% 
+  filter(year == 2006)
+
+crash07 <- VA %>% 
+  filter(year == 2007)
+
+crash08 <- VA %>% 
+  filter(year == 2008)
+
+crash09 <- VA %>% 
+  filter(year == 2009)
+
+crash10 <- VA %>% 
+  filter(year == 2010)
+
+```
+
+## Data Visualization
+
+### Virginia 2006
+#### Tap on county to show the name and value
+
+```{r plot_data}
+# Use this R-Chunk to plot & visualize your data!
+
+qpal <- colorQuantile("Blues", crash06$value, n = 7)
+
+leaflet() %>% 
+  addTiles() %>% 
+  addPolygons(data = crash06, stroke = FALSE, smoothFactor = 0.2, fillOpacity = 1,
+    color = ~qpal(value), popup = paste("County: ", crash06$countyname,"<br>",
+                          "Value: ", crash06$value, "<br>")) %>% 
+      addLegend("bottomright", pal = qpal, values = crash06$value,
+      title = "Value",
+      opacity = 1
+    )
+
+```
+
+### Virginia 2007
+#### Tap on county to show the name and value
+
+```{r}
+# Use this R-Chunk to plot & visualize your data!
+
+qpal <- colorQuantile("Blues", crash07$value, n = 7)
+
+leaflet() %>% 
+  addTiles() %>% 
+  addPolygons(data = crash07, stroke = FALSE, smoothFactor = 0.2, fillOpacity = 1,
+    color = ~qpal(value), popup = paste("County: ", crash07$countyname,"<br>",
+                          "Value: ", crash07$value, "<br>")) %>% 
+      addLegend("bottomright", pal = qpal, values = crash07$value,
+      title = "Value",
+      opacity = 1
+    )
+
+```
+
+### Virginia 2008
+#### Tap on county to show the name and value
+
+```{r}
+# Use this R-Chunk to plot & visualize your data!
+
+qpal <- colorQuantile("Blues", crash08$value, n = 7)
+
+leaflet() %>% 
+  addTiles() %>% 
+  addPolygons(data = crash08, stroke = FALSE, smoothFactor = 0.2, fillOpacity = 1,
+    color = ~qpal(value), popup = paste("County: ", crash08$countyname,"<br>",
+                          "Value: ", crash08$value, "<br>")) %>% 
+      addLegend("bottomright", pal = qpal, values = crash08$value,
+      title = "Value",
+      opacity = 1
+    )
+
+```
+
+### Virginia 2009
+#### Tap on county to show the name and value
+
+```{r}
+# Use this R-Chunk to plot & visualize your data!
+
+qpal <- colorQuantile("Blues", crash09$value, n = 7)
+
+leaflet() %>% 
+  addTiles() %>% 
+  addPolygons(data = crash09, stroke = FALSE, smoothFactor = 0.2, fillOpacity = 1,
+    color = ~qpal(value), popup = paste("County: ", crash09$countyname,"<br>",
+                          "Value: ", crash09$value, "<br>")) %>% 
+      addLegend("bottomright", pal = qpal, values = crash09$value,
+      title = "Value",
+      opacity = 1
+    )
+
+```
+
+### Virginia 2010
+#### Tap on county to show the name and value
+
+```{r}
+# Use this R-Chunk to plot & visualize your data!
+
+qpal <- colorQuantile("Blues", crash10$value, n = 7)
+
+leaflet() %>% 
+  addTiles() %>% 
+  addPolygons(data = crash10, stroke = FALSE, smoothFactor = 0.2, fillOpacity = 1,
+    color = ~qpal(value), popup = paste("County: ", crash10$countyname,"<br>",
+                          "Value: ", crash10$value, "<br>")) %>%
+    addLegend("bottomright", pal = qpal, values = crash10$value,
+      title = "Value",
+      opacity = 1
+    )
+    
+
+```
+
+## Conclusions
+
+The graphs above all represent the state of Virginia from 2006 to 2010, this encompasses right before the housing collapse and right afterwards. I've split them up into individual counties so you can see what counties suffured more in comparison to others. The color is representative of the value percentage, of the mean houses in that county, that the house retained during the years.
+
+These graphs show that Northern Virginia didn't suffer asmuch as southern and mid Virginia. Places like Fairfax, Falls Church, and Prince William county retained most of their values. We also see a couple outlier counties in the south that relatively held their values, like Franklin County.
