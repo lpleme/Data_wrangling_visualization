@@ -1,0 +1,106 @@
+---
+title: "Exit"
+output: html_document
+---
+
+## Grade request/Cover letter
+
+  Throughout the course I have only missed one class task and one case study. This means that I’ve done 23 tasks and 12 case studies, once case study 13 is uploaded. I also have my semester project uploaded. All of these were turned in on time or within a couple hours. In addition to my case studies and tasks, I have completed 3 leadership tasks too.
+	According to the deliverables needed for the grade, I would request an A-. After taking the coding challenge today I would drop that down to either a C or B- because of how bad the challenge went for me. I do think that my tasks and case studies were completed to a professional level.
+	During my experience with this class I have learned a multitude of techniques with data. We prioritized using ggplot in R to create our visualizations instead of using base R. I was a big base R fan beforehand and ggplot always intimidated me. Now ggplot makes the most sense to my when creating visualization, and also when you’re wrangling data.
+	We also worked with some spatial data towards the end. Spatial data was a little complex to use at first, but as time went by it really gave me a stronger sense of visualization techniques. It really helps portray your point and bring out a stronger understanding of the data being presented. 
+	This class is definitely one I would highly recommend, as it really strengthens your understanding of R and just general direction of data visualization. This class has made me more confident in my use of big data. 
+
+
+
+
+
+
+## Resume
+
+LORENZO LEME
+1810 Youngblood Street, McLean, VA 22101|571-533-8834|lpleme12@me.com
+Summary
+I am a student in the data science program at BYU-Idaho. I have experience with running statistical analysis on data sets using R and Python. I have experience interacting with an SQL server and being able to manipulate data. I have created ways to extract, combine, and clean data using Python so it could be analyzed in R.
+Skills Summary
+ 
+•	Python language
+•	CPR Certified
+•	SQL language
+•	HTML language
+•	R Statistical Code
+•	CITI certified
+•	Data visualization
+•	Big data
+•	Predictive modeling
+•	Data Wrangling
+ 
+Education
+McLean High School|2017
+ 
+•	Varsity letters in wrestling
+•	German honors society
+•	3.4 GPA
+ 
+Brigham Young University- Idaho|Data Science|Expected Graduation 2021
+Experience
+Zinga!
+Employee|09/2016 - 08/2017
+I served under two Zinga locations in Arlington and Falls Church. I would make the frozen yogurt, fix the machines, and check out customers. The stores were small enough that only one person would be working at a time. We also participated in the "Taste of Falls Church" where we won best tasting dessert.
+
+Jefferson Education Exchange Internship
+Employee|07/2019 - 08/2019
+During my time at the Jefferson Education Exchange, I was in charge of data wrangling, cleaning, and analysis. I had to combine and clean all the different data sets, that corresponded to different regions, and combine them into on data file. With this done I assigned each question a key identifier so you were able to locate the question with ease. I then ran statistical tests to see whether the data had strong evidence towards answering the questions and if it was even to have a great significance. 
+Awards and Acknowledgements
+ 
+•	Eagle Scout
+•	Assistant Scout Master
+•	Order of the Arrow brotherhood
+•	German honors Society
+ 
+## Semester Deliverables
+
+Task 1 - Yes
+Task 2 - Yes
+Task 3 - Yes
+Task 4 - Yes
+Task 5 - Yes
+Task 6 - Yes
+Task 7 - Yes
+Task 8 - Yes
+Task 9 - Yes
+Task 10 - No
+Task 11 - Yes
+Task 12 - Yes
+Task 13 - Yes
+Task 14 - Yes
+Task 15 - Yes
+Task 16 - Yes
+Task 17 - Yes
+Task 18 - Yes
+Task 19 - Yes
+Task 20 - Yes
+Task 21 - Yes
+Task 22 - Yes
+Task 23 - Yes
+Task 24 - Yes
+
+Case study 1 - Yes
+Case study 2 - Yes
+Case study 3 - Yes
+Case study 4 - Yes
+Case study 5 - Yes
+Case study 6 - No
+Case study 7 - Yes
+Case study 8 - Yes
+Case study 9 - Yes
+Case study 10 - Yes
+Case study 11 - Yes
+Case study 12 - Yes
+Case study 13 - Yes
+
+Leadership role 1 - Yes
+Leadership role 1 - Yes
+Leadership role 1 - Yes
+
+Semester Project - Yes
