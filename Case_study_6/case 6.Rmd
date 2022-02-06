@@ -1,0 +1,212 @@
+---
+title: "Case Study 6: The collapse of construction in Idaho"
+author: "Lorenzo Leme"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:  
+    keep_md: true
+    toc: true
+    toc_float: true
+    code_folding: hide
+    fig_height: 6
+    fig_width: 12
+    fig_align: 'center'
+---
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r load_libraries, include=FALSE}
+# Use this R-Chunk to load all your libraries!
+#install.packages("tidyverse") # run this line once in console to get package
+library(tidyverse)
+library(knitr)
+```
+
+```{r load_data}
+# Use this R-Chunk to import all your datasets!
+devtools::install_github("hathawayj/buildings")
+buildings <- buildings::buildings0809
+restaurants <- buildings::restaurants
+permits <- buildings::permits
+climate <- buildings::climate_zone_fips
+```
+
+## Background
+
+[ ] Load the R package from GitHub devtools::install_github("hathawayj/buildings") and find out what data is in the package
+[ ] Construction value is related to population in the area. Join the climate_zone_fips data to the buildings0809 data using the two  FIPS columns for state and county.
+[ ] After filtering to Food_Beverage_Service group of buildings in the Type variable, use the ProjectTitle column to create new subgroups from the groupings in the code section below and the restaurant names in restaurants.
+[ ] Restaurants that are not assigned using the names and keywords that are over 4000 square feet should be grouped into  Full Service Restaurants and be in Quick Service Restaurants if they are under 4000 square feet and new construction.
+[ ] Make sure your text strings your are matching on are as standardized as possible
+[ ] leverage functions like str_to_lower() and str_trim() to get all the words in a standardized form
+[ ] you could use the case_when() function to create the subgroups.
+[ ] Create an .Rmd file with 2-3 paragraphs summarizing your 3-4 graphics that inform the client questions
+[ ] Compile your .md and .html file into your git repository
+[ ] Find two other student’s compiled files in their repository and provide feedback using the issues feature in GitHub (If they already have three issues find a different student to critique)
+[ ] Address 1-2 of the issues posted on your project and push the updates to GitHub
+
+
+## Data Wrangling
+
+```{r tidy_data}
+# Use this R-Chunk to clean & wrangle your data!
+b.fips <- buildings %>% 
+  left_join(climate, by = "FIPS.state") %>% 
+    rename(type = "Type") %>% 
+      mutate(type = str_to_lower(type))
+
+names(b.fips) <- str_to_lower(names(b.fips))
+
+flatten <- function(x){
+  x %>% 
+  str_to_lower() %>% 
+  str_trim() %>% 
+  str_flatten(collapse = "|")
+}
+
+not_restaurants <- c("development","Food preperation center", "Food Services center","bakery","Grocery","conceession","Cafeteria", "lunchroom","school","facility"," hall ") %>% 
+  flatten()
+standalone_retail <- c("Wine","Spirits","Liquor","Convenience","drugstore","Flying J", "Rite Aid ","walgreens ","Love's Travel ") %>% 
+  flatten()
+full_service_type <- c("Ristorante","mexican","pizza ","steakhouse"," grill ","buffet","tavern"," bar ","waffle","italian","steak house") %>% 
+  flatten()
+quick_service_type <- c("coffee"," java "," Donut ","Doughnut"," burger ","Ice Cream ","custard ","sandwich ","fast food "," bagel ") %>% 
+  flatten()
+quick_service_names <- restaurants$Restaurant[restaurants$Type %in% c("coffee","Ice Cream","Fast Food")] %>% 
+  flatten()
+full_service_names <- restaurants$Restaurant[restaurants$Type %in% c("Pizza","Casual Dining","Fast Casual")] %>% 
+  flatten()
+
+b.types <- b.fips %>% 
+  filter(grepl("food", type)) %>% 
+  rename(project_title = "projecttitle") %>% 
+  mutate(project_title = str_to_lower(project_title),
+         classification = case_when(
+    str_detect(project_title, quick_service_names)     ~ "quick service",
+    str_detect(project_title, full_service_names)      ~ "full service",
+    str_detect(project_title, not_restaurants)         ~ "not restaurant",
+    str_detect(project_title, standalone_retail)       ~ "standalone retail",
+    str_detect(project_title, full_service_type)       ~ "full service",
+    str_detect(project_title, quick_service_type)      ~ "quick service",
+    sqft <= 4000                                         ~ "full service",
+    sqft < 4000 & str_detect(project_title, "new")       ~ "quick service",
+    TRUE                                                 ~ "other"
+  ))
+
+b.t <- b.types %>%
+  filter(type == "Food_Beverage_Service") %>%
+  mutate(restaurant_type = case_when(
+    str_detect(str_to_lower(project_title), str_to_lower(not_restaurants)) == TRUE ~ "Not Restaurants",
+    str_detect(str_to_lower(project_title), str_to_lower(standalone_retail)) == TRUE ~ "Stand-Alone Retail",
+    str_detect(str_to_lower(project_title), str_to_lower(full_service_type))== TRUE ~ "Full Service Type",
+    sqft > 4000 ~ "Full Service Type",
+    sqft <= 4000 ~ "Quick Service Type",
+    str_detect(str_to_lower(project_title), str_to_lower(quick_service_type)) == TRUE ~ "Quick Service Type"))
+```
+
+
+```{r}
+a <- climate_zone_fips %>% 
+  inner_join(buildings0809, by = c("FIPS.county", "FIPS.state"))
+
+not_restaurants <- c("development","Food preperation center", "Food Services center","bakery","Grocery","conceession","Cafeteria", "lunchroom","school","facility"," hall ")
+not_restaurants <- not_restaurants %>%
+  str_to_lower() %>%
+  str_trim() %>%
+  unlist() %>%
+  str_flatten(collapse = "|")
+
+standalone_retail <- c("Wine","Spirits","Liquor","Convenience","drugstore","Flying J", "Rite Aid ","walgreens ","Love's Travel ")
+
+standalone_retail <- standalone_retail %>%
+  str_to_lower() %>%
+  str_trim() %>%
+  unlist() %>%
+  str_flatten(collapse = "|")
+
+full_service_type <- c("Ristorante","mexican","pizza ","steakhouse"," grill ","buffet","tavern"," bar ","waffle","italian","steak house")
+full_service_type <- full_service_type %>%
+  str_to_lower() %>%
+  str_trim() %>%
+  unlist() %>%
+  str_flatten(collapse = "|")
+
+quick_service_type <- c("coffee"," java "," Donut ","Doughnut"," burger ","Ice Cream ","custard ","sandwich ","fast food "," bagel ")
+
+quick_service_type <- quick_service_type %>%
+  str_to_lower() %>%
+  str_trim() %>%
+  unlist() %>%
+  str_flatten(collapse = "|")
+
+
+b <- a %>%
+  filter(Type == "Food_Beverage_Service") %>%
+  mutate(restaurant_type = case_when(
+    str_detect(str_to_lower(ProjectTitle), str_to_lower(not_restaurants)) == TRUE ~ "Not Restaurants",
+    str_detect(str_to_lower(ProjectTitle), str_to_lower(standalone_retail)) == TRUE ~ "Stand-Alone Retail",
+    str_detect(str_to_lower(ProjectTitle), str_to_lower(full_service_type))== TRUE ~ "Full Service Type",
+    SqFt > 4000 ~ "Full Service Type",
+    SqFt <= 4000 ~ "Quick Service Type",
+    str_detect(str_to_lower(ProjectTitle), str_to_lower(quick_service_type)) == TRUE ~ "Quick Service Type"))
+
+c <- b %>%
+  filter(restaurant_type != "Not Restaurants") %>%
+  group_by(Year, restaurant_type, County.y) %>% 
+  summarise(count = n())
+
+com <- b %>%
+  filter(State_name == "Idaho") %>%
+  mutate(type = case_when(
+    restaurant_type %in% c("Full Service Type", "Quick Service Type") ~ "Restaurant",
+    restaurant_type == "Not Restaurants" ~ "Commercial")) %>%
+  filter(!is.na(type))
+  
+county <- b %>%
+  filter(State_name == "Idaho", restaurant_type == "Quick Service Type")
+
+f <- b %>%
+  filter(County.y == "ADA, ID") %>%
+  mutate(type = case_when(
+    restaurant_type %in% c("Full Service Type", "Quick Service Type") ~ "Restaurant",
+    restaurant_type == "Not Restaurants" ~ "Commercial")) %>%
+  filter(!is.na(type))
+```
+
+## Data Visualization
+
+```{r plot_data}
+# Use this R-Chunk to plot & visualize your data!
+b.types %>% 
+  add_count(classification) %>% 
+    mutate(classification = classification %>% 
+             str_to_upper()) %>% 
+        ggplot(aes(x = reorder(classification, n))) +
+        geom_bar( fill = c("cyan")) +
+        coord_flip() +
+        theme_minimal() +
+        facet_grid(. ~ year) +
+        labs(y = "Number of Buildings Built", x = "")
+
+
+```
+
+```{r}
+ggplot(com, aes(x = type, y = Pop100)) +
+  geom_bar(stat="identity", aes(fill = type))+
+  labs(x = "Construction Type", y = "Building Success (Based of Population)", title = "Commercial Building vs Restaurants") +
+  theme(legend.position = "none")
+```
+
+```{r}
+ggplot(county, aes(x = County.y, y = Pop100)) +
+  geom_bar(stat="identity", aes(fill = County.y))+
+  labs(x = "County", y = "Building Success (Based of Population)", title = "How Built the Most Fast Food Restaurants?") +
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+
+## Conclusions
